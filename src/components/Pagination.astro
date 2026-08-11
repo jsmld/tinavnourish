@@ -1,0 +1,86 @@
+---
+import { filterPath } from '../lib/recipes';
+import type { Course, Category, Diet } from '../lib/constants';
+
+interface Props {
+  page: number;
+  totalPages: number;
+  active?: {
+    course?: Course;
+    category?: Category;
+    diet?: Diet;
+  };
+}
+
+const { page, totalPages, active = {} } = Astro.props;
+
+const pathFor = (n: number) => filterPath({ ...active, page: n });
+
+// Build a compact list of page numbers with ellipses (always show first, last,
+// current ±1).
+const pages: (number | 'ellipsis')[] = [];
+const add = (n: number | 'ellipsis') => pages.push(n);
+if (totalPages <= 7) {
+  for (let i = 1; i <= totalPages; i++) add(i);
+} else {
+  add(1);
+  if (page > 3) add('ellipsis');
+  for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) add(i);
+  if (page < totalPages - 2) add('ellipsis');
+  add(totalPages);
+}
+
+const prevHref = page > 1 ? pathFor(page - 1) : undefined;
+const nextHref = page < totalPages ? pathFor(page + 1) : undefined;
+---
+
+{
+  totalPages > 1 && (
+    <nav aria-label="Pagination" class="mt-10 flex items-center justify-center gap-1 text-sm">
+      <a
+        href={prevHref}
+        class:list={[
+          'rounded-full px-3 py-1.5 transition-colors',
+          prevHref
+            ? 'text-ink hover:bg-cream-deep'
+            : 'pointer-events-none text-ink-soft/40',
+        ]}
+        aria-disabled={!prevHref}
+      >
+        ← Prev
+      </a>
+
+      {pages.map((p) =>
+        p === 'ellipsis' ? (
+          <span class="px-2 text-ink-soft">…</span>
+        ) : (
+          <a
+            href={pathFor(p)}
+            aria-current={p === page ? 'page' : undefined}
+            class:list={[
+              'rounded-full px-3 py-1.5 transition-colors',
+              p === page
+                ? 'bg-ink text-cream'
+                : 'text-ink hover:bg-cream-deep',
+            ]}
+          >
+            {p}
+          </a>
+        ),
+      )}
+
+      <a
+        href={nextHref}
+        class:list={[
+          'rounded-full px-3 py-1.5 transition-colors',
+          nextHref
+            ? 'text-ink hover:bg-cream-deep'
+            : 'pointer-events-none text-ink-soft/40',
+        ]}
+        aria-disabled={!nextHref}
+      >
+        Next →
+      </a>
+    </nav>
+  )
+}

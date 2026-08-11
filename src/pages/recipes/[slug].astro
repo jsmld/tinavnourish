@@ -1,0 +1,161 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DietBadge from '../../components/DietBadge.astro';
+import ServingsAdjuster from '../../components/ServingsAdjuster.tsx';
+import RecipeCard from '../../components/RecipeCard.astro';
+import { COURSE_LABELS, CATEGORY_LABELS } from '../../lib/constants';
+import { getAllRecipes, getFiltered, type Recipe } from '../../lib/recipes';
+
+export const getStaticPaths = (async () => {
+  const all = await getAllRecipes();
+  return all.map((recipe) => ({
+    params: { slug: recipe.id },
+    props: { recipe },
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  recipe: Recipe;
+}
+
+const { recipe } = Astro.props as Props;
+const { title, description, heroImage, author, course, category, diet, prepTime, cookTime, servings, ingredients, steps, publishDate, tags } =
+  recipe.data;
+
+// Related: same course, excluding current, max 3.
+const sameCourse = (await getFiltered({ course })).filter((r) => r.id !== recipe.id);
+const related = (sameCourse.length > 0 ? sameCourse : await getAllRecipes())
+  .filter((r) => r.id !== recipe.id)
+  .slice(0, 3);
+
+// Normalise ingredients for the React island (string vs structured).
+const ingredientLines = ingredients.map((ing) =>
+  typeof ing === 'string' ? { kind: 'text' as const, item: ing } : { kind: 'structured' as const, ...ing },
+);
+
+const fmtDate = publishDate.toLocaleDateString('en-NZ', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+const totalTime = prepTime + cookTime;
+---
+
+<BaseLayout title={title} description={description} image={heroImage}>
+  <article class="mx-auto max-w-3xl px-6 pt-12 pb-8">
+    <p class="text-xs uppercase tracking-[0.25em] text-terracotta">
+      {COURSE_LABELS[course]} · {CATEGORY_LABELS[category]}
+    </p>
+    <h1 class="mt-3 font-serif text-4xl font-semibold leading-[1.08] text-ink sm:text-5xl">
+      {title}
+    </h1>
+    <p class="mt-5 text-lg leading-relaxed text-ink-soft">{description}</p>
+
+    <div class="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-ink-soft">
+      <span>Recipe by <span class="font-medium text-ink">{author.name}</span></span>
+      <span aria-hidden="true">·</span>
+      <time datetime={publishDate.toISOString()}>{fmtDate}</time>
+      {
+        diet.length > 0 && (
+          <>
+            <span aria-hidden="true">·</span>
+            <span class="flex gap-1">
+              {diet.map((d) => (
+                <DietBadge diet={d} label />
+              ))}
+            </span>
+          </>
+        )
+      }
+    </div>
+  </article>
+
+  <div class="mx-auto max-w-5xl px-6">
+    <img
+      src={heroImage}
+      alt={title}
+      class="aspect-[16/10] w-full rounded-3xl object-cover shadow-sm"
+      loading="eager"
+    />
+  </div>
+
+  <!-- Stats -->
+  <section class="mx-auto mt-10 max-w-3xl px-6">
+    <dl class="grid grid-cols-3 gap-4 rounded-2xl bg-cream-deep/60 p-5 text-center ring-1 ring-rule">
+      <div>
+        <dt class="text-xs uppercase tracking-[0.15em] text-ink-soft">Prep</dt>
+        <dd class="mt-1 font-serif text-2xl text-ink">{prepTime}<span class="ml-1 text-sm">min</span></dd>
+      </div>
+      <div>
+        <dt class="text-xs uppercase tracking-[0.15em] text-ink-soft">Cook</dt>
+        <dd class="mt-1 font-serif text-2xl text-ink">{cookTime}<span class="ml-1 text-sm">min</span></dd>
+      </div>
+      <div>
+        <dt class="text-xs uppercase tracking-[0.15em] text-ink-soft">Total</dt>
+        <dd class="mt-1 font-serif text-2xl text-ink">{totalTime}<span class="ml-1 text-sm">min</span></dd>
+      </div>
+    </dl>
+  </section>
+
+  <!-- Body: ingredients (interactive) + steps -->
+  <section class="mx-auto mt-12 grid max-w-5xl gap-12 px-6 lg:grid-cols-[1fr_1.4fr]">
+    <div>
+      <h2 class="font-serif text-2xl text-ink">Ingredients</h2>
+      <div class="mt-4" data-servings-island>
+        <ServingsAdjuster
+          client:load
+          originalServings={servings}
+          ingredients={ingredientLines}
+        />
+      </div>
+      <p class="mt-3 text-xs text-ink-soft">
+        Default serving size: {servings}. Tap +/− to scale (1–12). String-form
+        ingredients — like "flaky sea salt" — are shown as written.
+      </p>
+    </div>
+
+    <div class="prose-recipe">
+      <h2 class="font-serif text-2xl text-ink">Method</h2>
+      <ol class="mt-4">
+        {steps.map((step, i) => (
+          <li class="relative pl-8">
+            <span class="absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-terracotta/10 font-serif text-sm font-semibold text-terracotta">
+              {i + 1}
+            </span>
+            <span class="block pt-0.5">{step}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  {
+    tags.length > 0 && (
+      <section class="mx-auto mt-12 max-w-3xl px-6">
+        <p class="text-xs uppercase tracking-[0.15em] text-ink-soft">Tagged</p>
+        <div class="mt-2 flex flex-wrap gap-2">
+          {tags.map((tag) => (
+            <span class="rounded-full bg-cream-deep px-3 py-1 text-xs font-medium text-ink-soft ring-1 ring-rule">
+              #{tag}
+            </span>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Related -->
+  {
+    related.length > 0 && (
+      <section class="mx-auto mt-20 max-w-6xl px-6">
+        <h2 class="font-serif text-2xl text-ink">More {COURSE_LABELS[course].toLowerCase()}</h2>
+        <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {related.map((r) => (
+            <RecipeCard recipe={r} compact />
+          ))}
+        </div>
+      </section>
+    )
+  }
+</BaseLayout>

@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RecipeCard from '../../components/RecipeCard.astro';
+import FilterBar from '../../components/FilterBar.astro';
+import Pagination from '../../components/Pagination.astro';
+import { getAllRecipes, paginate, pageCount } from '../../lib/recipes';
+
+const all = await getAllRecipes();
+const page = 1;
+const list = paginate(all, page);
+const totalPages = pageCount(all);
+---
+
+<BaseLayout
+  title="Recipes"
+  description="Every recipe on tinavnourish — browsable by course, category and diet."
+>
+  <section class="mx-auto max-w-6xl px-6 pt-16 pb-10">
+    <p class="text-xs uppercase tracking-[0.25em] text-terracotta">All recipes</p>
+    <h1 class="mt-4 font-serif text-5xl font-semibold leading-[1.05] text-ink">
+      The recipe archive
+    </h1>
+    <p class="mt-4 max-w-xl text-base leading-relaxed text-ink-soft">
+      {all.length} recipes and counting. Filter by course, category or diet below.
+    </p>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-6 pb-6">
+    <FilterBar />
+  </section>
+
+  <section class="mx-auto max-w-6xl px-6 pb-16">
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {list.map((recipe) => <RecipeCard recipe={recipe} />)}
+    </div>
+
+    <Pagination page={page} totalPages={totalPages} />
+  </section>
+</BaseLayout>

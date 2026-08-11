@@ -1,0 +1,32 @@
+---
+import type { Diet } from '../lib/constants';
+import { DIET_BADGES } from '../lib/constants';
+
+interface Props {
+  diet: Diet;
+  /** When true, render the full label ("Vegan") instead of the short code ("VG"). */
+  label?: boolean;
+}
+
+const { diet, label = false } = Astro.props;
+
+const styles: Record<Diet, string> = {
+  'gluten-free': 'bg-amber-100 text-amber-900 ring-amber-200',
+  'dairy-free': 'bg-sky-100 text-sky-900 ring-sky-200',
+  vegetarian: 'bg-emerald-100 text-emerald-900 ring-emerald-200',
+  vegan: 'bg-green-100 text-green-900 ring-green-200',
+};
+
+const text = label
+  ? diet.replace('-', ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+  : DIET_BADGES[diet];
+---
+
+<span
+  class:list={[
+    'inline-flex items-center rounded-full px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide ring-1 ring-inset',
+    styles[diet],
+  ]}
+>
+  {text}
+</span>

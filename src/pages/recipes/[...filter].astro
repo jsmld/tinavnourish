@@ -1,0 +1,176 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RecipeCard from '../../components/RecipeCard.astro';
+import FilterBar from '../../components/FilterBar.astro';
+import Pagination from '../../components/Pagination.astro';
+import {
+  COURSES,
+  CATEGORIES,
+  DIETS,
+  COURSE_LABELS,
+  CATEGORY_LABELS,
+  DIET_LABELS,
+  PER_PAGE,
+  type Course,
+  type Category,
+  type Diet,
+} from '../../lib/constants';
+import { getAllRecipes, getFiltered, paginate } from '../../lib/recipes';
+
+/**
+ * One getStaticPaths emits every filter+pagination route:
+ *
+ *   /recipes/page/2
+ *   /recipes/course/dinner, /recipes/course/dinner/page/2
+ *   /recipes/category/mains, /recipes/category/mains/page/2
+ *   /recipes/diet/vegan,     /recipes/diet/vegan/page/2
+ *
+ * The `filter` rest-param is the joined URL path (Astro 7 requires a string,
+ * not an array). Astro splits it back into segments when matching.
+ */
+export const getStaticPaths = (async () => {
+  const all = await getAllRecipes();
+
+  type Active = { course?: Course; category?: Category; diet?: Diet };
+  type PathEntry = {
+    params: { filter: string };
+    props: { page: number; totalPages: number; active: Active; count: number };
+  };
+  const paths: PathEntry[] = [];
+
+  const pushPaths = (active: Active, filteredCount: number) => {
+    const totalPages = Math.max(1, Math.ceil(filteredCount / PER_PAGE));
+    // Page 1 lives at the bare URL (no /page/1) so we only emit 2..N here,
+    // plus the bare filter URL itself which acts as page 1.
+    // NOTE: Astro 7 requires rest params to be joined strings, not arrays.
+    const join = (segs: string[]) => segs.join('/');
+
+    // Bare filter URL = page 1 (we render it)
+    const baseSegs: string[] = [];
+    if (active.course) baseSegs.push('course', active.course);
+    else if (active.category) baseSegs.push('category', active.category);
+    else if (active.diet) baseSegs.push('diet', active.diet);
+
+    // For the "all recipes" pagination we emit /recipes/page/N (N>=2).
+    // The /recipes (page 1 of all) is handled by recipes/index.astro.
+    if (!active.course && !active.category && !active.diet) {
+      for (let p = 2; p <= totalPages; p++) {
+        paths.push({
+          params: { filter: join(['page', String(p)]) },
+          props: { page: p, totalPages, active: {}, count: filteredCount },
+        });
+      }
+      return;
+    }
+
+    // Filtered page 1 (bare filter URL)
+    paths.push({
+      params: { filter: join(baseSegs) },
+      props: { page: 1, totalPages, active, count: filteredCount },
+    });
+    // Filtered pages 2..N
+    for (let p = 2; p <= totalPages; p++) {
+      paths.push({
+        params: { filter: join([...baseSegs, 'page', String(p)]) },
+        props: { page: p, totalPages, active, count: filteredCount },
+      });
+    }
+  };
+
+  // All-recipes pagination (page 2..N)
+  pushPaths({}, all.length);
+
+  // Per-course
+  for (const course of COURSES) {
+    const list = await getFiltered({ course });
+    pushPaths({ course }, list.length);
+  }
+  // Per-category
+  for (const category of CATEGORIES) {
+    const list = await getFiltered({ category });
+    pushPaths({ category }, list.length);
+  }
+  // Per-diet
+  for (const diet of DIETS) {
+    const list = await getFiltered({ diet });
+    pushPaths({ diet }, list.length);
+  }
+
+  return paths;
+}) satisfies GetStaticPaths;
+
+interface Props {
+  page: number;
+  totalPages: number;
+  active: { course?: Course; category?: Category; diet?: Diet };
+  count: number;
+}
+
+const { page, totalPages, active, count } = Astro.props as Props;
+
+const list = await getFiltered(active);
+const pageItems = paginate(list, page);
+
+// Build the page title and heading.
+let heading = 'All recipes';
+let title = 'Recipes';
+if (active.course) {
+  heading = COURSE_LABELS[active.course];
+  title = `${COURSE_LABELS[active.course]} recipes`;
+} else if (active.category) {
+  heading = CATEGORY_LABELS[active.category];
+  title = `${CATEGORY_LABELS[active.category]} recipes`;
+} else if (active.diet) {
+  heading = DIET_LABELS[active.diet];
+  title = `${DIET_LABELS[active.diet]} recipes`;
+}
+
+const description = `${count} ${
+  active.course ?? active.category ?? active.diet ? heading.toLowerCase() : ''
+} recipes on tinavnourish.`.trim();
+---
+
+<BaseLayout {title} {description}>
+  <section class="mx-auto max-w-6xl px-6 pt-16 pb-10">
+    <p class="text-xs uppercase tracking-[0.25em] text-terracotta">
+      {active.course ? 'Course' : active.category ? 'Category' : active.diet ? 'Diet' : 'All recipes'}
+    </p>
+    <h1 class="mt-4 font-serif text-5xl font-semibold leading-[1.05] text-ink">
+      {heading}
+    </h1>
+    <p class="mt-4 max-w-xl text-base leading-relaxed text-ink-soft">
+      Showing {pageItems.length} of {count} {count === 1 ? 'recipe' : 'recipes'}
+      {page > 1 && <span> · page {page} of {totalPages}</span>}.
+    </p>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-6 pb-6">
+    <FilterBar active={active} />
+  </section>
+
+  <section class="mx-auto max-w-6xl px-6 pb-16">
+    {
+      pageItems.length > 0 ? (
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {pageItems.map((recipe) => (
+            <RecipeCard recipe={recipe} />
+          ))}
+        </div>
+      ) : (
+        <div class="rounded-2xl bg-cream-deep/60 p-10 text-center ring-1 ring-rule">
+          <p class="font-serif text-2xl text-ink">No recipes here yet.</p>
+          <p class="mt-2 text-sm text-ink-soft">
+            Try another filter, or{' '}
+            <a href="/recipes" class="link-underline text-terracotta">
+              browse all recipes
+            </a>
+            .
+          </p>
+        </div>
+      )
+    }
+
+    <Pagination page={page} totalPages={totalPages} active={active} />
+  </section>
+</BaseLayout>

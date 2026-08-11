@@ -1,0 +1,58 @@
+---
+import NewsletterForm from './NewsletterForm.astro';
+
+const year = new Date().getFullYear();
+
+const nav = [
+  { href: '/recipes', label: 'All Recipes' },
+  { href: '/recipes/course/dinner', label: 'Dinner' },
+  { href: '/recipes/course/baking', label: 'Baking' },
+  { href: '/recipes/diet/vegan', label: 'Vegan' },
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
+];
+---
+
+<footer class="mt-24 border-t border-rule bg-cream-deep">
+  <div class="mx-auto max-w-6xl px-6 py-16">
+    <div class="grid gap-12 md:grid-cols-[1.2fr_1fr]">
+      <div>
+        <p class="font-serif text-3xl font-semibold text-ink">tinavnourish</p>
+        <p class="mt-3 max-w-md text-sm leading-relaxed text-ink-soft">
+          A slow recipe journal for cooks who like reading the headnotes. Seasonal,
+          plant-forward, occasionally fudgy. New recipes every fortnight.
+        </p>
+        <div class="mt-8">
+          <NewsletterForm />
+        </div>
+      </div>
+
+      <nav aria-label="Footer" class="md:justify-self-end">
+        <p class="text-xs uppercase tracking-[0.2em] text-ink-soft">Explore</p>
+        <ul class="mt-4 space-y-2 text-sm">
+          {
+            nav.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class="link-underline text-ink hover:text-terracotta"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </div>
+
+    <div
+      class="mt-12 flex flex-col items-start justify-between gap-3 border-t border-rule pt-6 text-xs text-ink-soft sm:flex-row sm:items-center"
+    >
+      <p>&copy; {year} tinavnourish. All recipes are for personal use.</p>
+      <p>
+        Built with <a href="https://astro.build" class="link-underline">Astro</a>.
+      </p>
+    </div>
+  </div>
+</footer>

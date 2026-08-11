@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'Contact';
+const description = 'Get in touch — recipe corrections, pitches, or just to say hello.';
+---
+
+<BaseLayout {title} {description}>
+  <section class="mx-auto max-w-3xl px-6 pt-16 pb-24">
+    <p class="text-xs uppercase tracking-[0.25em] text-terracotta">Contact</p>
+    <h1 class="mt-4 font-serif text-5xl font-semibold leading-[1.05] text-ink">
+      Say hello.
+    </h1>
+    <p class="mt-5 max-w-xl text-lg leading-relaxed text-ink-soft">
+      Found a typo in a recipe? Want to pitch a piece? Have a pantry product you
+      think we'd love? Drop a note below.
+    </p>
+
+    <form data-contact-form class="mt-10 grid gap-4">
+      <div class="grid gap-4 sm:grid-cols-2">
+        <label class="flex flex-col gap-1 text-sm">
+          <span class="font-medium text-ink">Name</span>
+          <input
+            type="text"
+            name="name"
+            required
+            autocomplete="name"
+            class="rounded-lg border border-rule bg-paper px-3 py-2 text-ink focus:border-terracotta focus:outline-none"
+          />
+        </label>
+        <label class="flex flex-col gap-1 text-sm">
+          <span class="font-medium text-ink">Email</span>
+          <input
+            type="email"
+            name="email"
+            required
+            autocomplete="email"
+            class="rounded-lg border border-rule bg-paper px-3 py-2 text-ink focus:border-terracotta focus:outline-none"
+          />
+        </label>
+      </div>
+      <label class="flex flex-col gap-1 text-sm">
+        <span class="font-medium text-ink">Message</span>
+        <textarea
+          name="message"
+          required
+          rows="6"
+          class="rounded-lg border border-rule bg-paper px-3 py-2 text-ink focus:border-terracotta focus:outline-none"
+        ></textarea>
+      </label>
+
+      <div class="flex items-center gap-4">
+        <button
+          type="submit"
+          class="rounded-full bg-ink px-6 py-3 text-sm font-semibold text-cream transition-colors hover:bg-ink-soft"
+        >
+          Send message
+        </button>
+        <p
+          data-contact-toast
+          hidden
+          role="status"
+          class="text-sm text-sage"
+        >
+          Thanks — your message is queued (placeholder form).
+        </p>
+      </div>
+    </form>
+
+    <p class="mt-10 text-xs text-ink-soft">
+      This form is a placeholder. Wire it up to a real endpoint (e.g. a Vercel
+      serverless function at <code>/api/contact</code>) before launch.
+    </p>
+  </section>
+</BaseLayout>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+  const toast = document.querySelector('[data-contact-toast]');
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    // Placeholder: no data is sent. Plug a real endpoint in here.
+    if (toast instanceof HTMLElement) toast.hidden = false;
+    form?.reset();
+  });
+</script>

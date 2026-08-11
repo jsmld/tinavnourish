@@ -1,0 +1,107 @@
+---
+import {
+  COURSES,
+  CATEGORIES,
+  DIETS,
+  COURSE_LABELS,
+  CATEGORY_LABELS,
+  DIET_LABELS,
+  type Course,
+  type Category,
+  type Diet,
+} from '../lib/constants';
+import { filterPath, getFacetCounts } from '../lib/recipes';
+
+interface Props {
+  /** Active filter derived from the current URL, if any. */
+  active?: {
+    course?: Course;
+    category?: Category;
+    diet?: Diet;
+  };
+}
+
+const { active = {} } = Astro.props;
+const counts = await getFacetCounts();
+
+const pill = (href: string, label: string, count: number, isActive: boolean) => ({
+  href,
+  label,
+  count,
+  isActive,
+});
+
+const coursePills = COURSES.map((c) =>
+  pill(filterPath({ course: c }), COURSE_LABELS[c], counts.byCourse[c], active.course === c),
+);
+const categoryPills = CATEGORIES.map((c) =>
+  pill(
+    filterPath({ category: c }),
+    CATEGORY_LABELS[c],
+    counts.byCategory[c],
+    active.category === c,
+  ),
+);
+const dietPills = DIETS.map((d) =>
+  pill(filterPath({ diet: d }), DIET_LABELS[d], counts.byDiet[d], active.diet === d),
+);
+
+const hasActive = Boolean(active.course || active.category || active.diet);
+
+interface Row {
+  title: string;
+  pills: ReturnType<typeof pill>[];
+}
+const rows: Row[] = [
+  { title: 'Course', pills: coursePills },
+  { title: 'Category', pills: categoryPills },
+  { title: 'Diet', pills: dietPills },
+];
+---
+
+<div class="rounded-2xl bg-cream-deep/60 p-6 ring-1 ring-rule">
+  <div class="mb-4 flex items-center justify-between gap-4">
+    <h2 class="font-serif text-lg text-ink">Browse</h2>
+    <a
+      href="/recipes"
+      class:list={[
+        'text-xs font-medium uppercase tracking-[0.15em] transition-colors',
+        hasActive ? 'text-terracotta hover:text-terracotta-dark' : 'text-ink-soft',
+      ]}
+    >
+      All recipes →
+    </a>
+  </div>
+
+  <div class="space-y-4">
+    {
+      rows.map((row) => (
+        <div class="flex flex-col gap-2 border-t border-rule pt-4 first:border-t-0 first:pt-0 sm:flex-row sm:items-center">
+          <p class="w-28 shrink-0 text-xs font-semibold uppercase tracking-[0.15em] text-ink-soft">
+            {row.title}
+          </p>
+          <div class="flex flex-wrap gap-1.5">
+            {row.pills.map((p) => (
+              <a
+                href={p.href}
+                aria-current={p.isActive ? 'page' : undefined}
+                class:list={[
+                  'rounded-full px-3 py-1 text-xs font-medium transition-colors',
+                  p.isActive
+                    ? 'bg-ink text-cream'
+                    : 'bg-paper text-ink-soft ring-1 ring-rule hover:text-ink hover:ring-terracotta/40',
+                  p.count === 0 && !p.isActive && 'opacity-40',
+                ]}
+              >
+                {p.label}
+                <span class:list={[p.count === 0 && !p.isActive ? '' : 'opacity-60']}>
+                  {' '}· {p.count}
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</div>

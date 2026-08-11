@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'About';
+const description =
+  'tinavnourish is a slow recipe journal for cooks who actually read the headnotes.';
+---
+
+<BaseLayout {title} {description}>
+  <article class="mx-auto max-w-3xl px-6 pt-16 pb-24">
+    <p class="text-xs uppercase tracking-[0.25em] text-terracotta">About</p>
+    <h1 class="mt-4 font-serif text-5xl font-semibold leading-[1.05] text-ink">
+      Notes from a slow kitchen.
+    </h1>
+
+    <div class="prose-recipe mt-10 text-[1.05rem] leading-relaxed text-ink-soft">
+      <p>
+        tinavnourish is a recipe journal for cooks who actually read the headnotes.
+        No auto-playing videos, no six-paragraph story about a holiday before the
+        recipe — just a real, tested method, a headnote that explains the
+        interesting bits, and notes on what to change when you don't have the
+        "right" pan.
+      </p>
+
+      <h2>What you'll find here</h2>
+      <ul>
+        <li>Seasonal, plant-forward mains and sides with the occasional sweet.</li>
+        <li>Times that are honest — prep time is real prep, not "while the oven heats".</li>
+        <li>Mixed ingredient forms. "200g flour" is structured; "flaky sea salt, to taste" is not. The schema handles both.</li>
+      </ul>
+
+      <h2>Who writes this</h2>
+      <p>
+        A small group of home cooks who develop and re-test each recipe at least
+        three times before it goes up. Authorship appears on every recipe card and
+        on each recipe page.
+      </p>
+
+      <h2>The longer plan</h2>
+      <p>
+        A small print cookbook and a pantry shop are both on the roadmap — the
+        scaffold for the shop already lives in this codebase. If you'd like to
+        publish a recipe here, or stock a product, the contact page is the door.
+      </p>
+    </div>
+  </article>
+</BaseLayout>

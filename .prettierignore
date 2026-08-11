@@ -1,0 +1,17 @@
+# Build & generated
+dist/
+.astro/
+.vercel/
+
+# Dependencies
+node_modules/
+pnpm-lock.yaml
+
+# Markdown content is hand-authored; respect author line-break choices.
+src/content/**/*.md
+
+# OS / editor cruft
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json

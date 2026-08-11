@@ -1,0 +1,57 @@
+---
+// NewsletterForm — placeholder UI.
+// TODO(commerce/launch): replace the inline submit handler with a real endpoint,
+// e.g. a /api/newsletter route (Vercel serverless) hooked up to Buttondown,
+// ConvertKit, or Mailchimp. The form intentionally posts no data until then.
+---
+
+<div data-newsletter class="w-full">
+  <p class="text-xs uppercase tracking-[0.2em] text-ink-soft">Newsletter</p>
+  <p class="mt-1 font-serif text-xl text-ink">A letter, every other Friday.</p>
+
+  <form
+    data-newsletter-form
+    class="mt-4 flex max-w-md flex-col gap-2 sm:flex-row"
+    novalidate
+  >
+    <label for="newsletter-email" class="sr-only">Email address</label>
+    <input
+      id="newsletter-email"
+      type="email"
+      name="email"
+      required
+      autocomplete="email"
+      placeholder="you@kitchen.table"
+      class="flex-1 rounded-full border border-rule bg-paper px-4 py-2 text-sm text-ink placeholder:text-ink-soft/60 focus:border-terracotta focus:outline-none"
+    />
+    <button
+      type="submit"
+      class="rounded-full bg-terracotta px-5 py-2 text-sm font-semibold text-cream transition-colors hover:bg-terracotta-dark"
+    >
+      Subscribe
+    </button>
+  </form>
+
+  <p
+    data-newsletter-toast
+    hidden
+    role="status"
+    class="mt-3 rounded-lg bg-sage/15 px-3 py-2 text-sm text-ink"
+  >
+    Thanks! Check your inbox to confirm.
+  </p>
+</div>
+
+<script>
+  const root = document.querySelector('[data-newsletter]');
+  const form = root?.querySelector<HTMLFormElement>('[data-newsletter-form]');
+  const toast = root?.querySelector('[data-newsletter-toast]');
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    // Placeholder: no data is sent. Plug a real endpoint in here.
+    if (toast instanceof HTMLElement) {
+      toast.hidden = false;
+    }
+    form?.reset();
+  });
+</script>
