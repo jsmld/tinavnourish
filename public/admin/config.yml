@@ -1,0 +1,94 @@
+# Decap CMS configuration.
+#
+# NOTE: before going live, set the real production domain in BOTH
+#   - astro.config.mjs (`site:`)
+#   - `base_url:` below
+# and create the GitHub OAuth App + Vercel env vars as documented in the
+# project plan / README.
+
+backend:
+  name: github
+  repo: jsmld/tinavnourish
+  branch: main
+  base_url: https://tinavnourish.example.com/api
+  auth_endpoint: /auth
+
+# Enables local development with `npx decap-server`. Auto-ignored on
+# non-localhost hosts, so it's safe to leave enabled in the committed config.
+local_backend: true
+
+# Media uploads land in public/uploads/ and are served at /uploads/...
+media_folder: public/uploads
+public_folder: /uploads
+
+collections:
+  - name: recipes
+    label: Recipes
+    label_singular: Recipe
+    folder: src/content/recipes
+    create: true
+    extension: md
+    format: frontmatter
+    slug: '{{slug}}'
+    identifier_field: title
+    summary: '{{title}} — {{course}} ({{publishDate}})'
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: description, label: Description, widget: text }
+      - { name: heroImage, label: Hero image, widget: image }
+      - label: Author
+        name: author
+        widget: object
+        fields:
+          - { name: name, label: Name, widget: string }
+          - { name: bio, label: Bio, widget: string, required: false }
+          - { name: avatar, label: Avatar, widget: image, required: false }
+      - name: course
+        label: Course
+        widget: select
+        options: [breakfast, lunch, dinner, dessert, baking, sides, starter, bites]
+        default: dinner
+      - name: category
+        label: Category
+        widget: select
+        options:
+          [baking, mains, salads, soups, pasta-grains, fish-seafood, meat, poultry,
+          vegetables, fruit, drinks, eggs-dairy, sweets, condiments, breads-pastry]
+        default: mains
+      - name: diet
+        label: Diet
+        widget: select
+        multiple: true
+        options: [gluten-free, dairy-free, vegetarian, vegan]
+        default: []
+      - { name: prepTime, label: Prep time (minutes), widget: number, value_type: int, min: 1, default: 10 }
+      - { name: cookTime, label: Cook time (minutes), widget: number, value_type: int, min: 0, default: 0 }
+      - { name: servings, label: Servings, widget: number, value_type: int, min: 1, default: 4 }
+      - label: Ingredients
+        name: ingredients
+        widget: list
+        min: 1
+        label_singular: ingredient
+        field:
+          label: Ingredient
+          name: ingredient
+          widget: object
+          fields:
+            - { name: amount, label: Amount, widget: string, required: false }
+            - { name: unit, label: Unit, widget: string, required: false }
+            - { name: item, label: Item, widget: string }
+      - label: Steps
+        name: steps
+        widget: list
+        min: 1
+        label_singular: step
+        field: { label: Step, name: step, widget: string }
+      - { name: publishDate, label: Publish date, widget: datetime, date_format: YYYY-MM-DD, time_format: false, format: YYYY-MM-DD }
+      - label: Tags
+        name: tags
+        widget: list
+        label_singular: tag
+        field: { label: Tag, name: tag, widget: string }
+        default: []
+      - { name: featured, label: Featured, widget: boolean, default: false }
+      - { name: body, label: Body, widget: markdown }

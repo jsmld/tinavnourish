@@ -38,7 +38,9 @@ ingredients:
   - amount: '1'
     unit: tbsp
     item: neutral oil
-  - toasted sesame seeds and spring onion, to serve
+  - amount: ''
+    unit: ''
+    item: 'toasted sesame seeds and spring onion, to serve'
 steps:
   - Score the cut sides of the aubergine halves in a tight diamond pattern, taking care not to cut through the skin.
   - Heat the grill (broiler) to high and brush the cut sides with oil. Grill for 8–10 minutes until deeply golden and soft.

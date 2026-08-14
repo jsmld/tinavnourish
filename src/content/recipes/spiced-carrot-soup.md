@@ -39,7 +39,9 @@ ingredients:
   - amount: '1/2'
     unit: tsp
     item: ground turmeric
-  - plain yoghurt, crisped shallots and coriander, to serve
+  - amount: ''
+    unit: ''
+    item: 'plain yoghurt, crisped shallots and coriander, to serve'
 steps:
   - Warm the ghee in a heavy pan over medium heat and sweat the onion for 6 minutes until soft.
   - Add the spices and stir for 30 seconds until toasted and fragrant.

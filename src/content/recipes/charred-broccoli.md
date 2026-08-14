@@ -38,7 +38,9 @@ ingredients:
   - amount: '1'
     unit: tsp
     item: aleppo pepper or chilli flakes
-  - flaky sea salt
+  - amount: ''
+    unit: ''
+    item: 'flaky sea salt'
 steps:
   - Heat the oven to 220°C (425°F). Toss the broccoli with 2 tablespoons of olive oil and a generous pinch of salt.
   - Spread on a baking sheet and roast for 10–12 minutes until the florets are deeply charred at the edges but still have bite.

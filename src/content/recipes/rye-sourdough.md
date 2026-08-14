@@ -30,7 +30,9 @@ ingredients:
   - amount: '12'
     unit: g
     item: fine sea salt
-  - extra rye flour, for the proving basket
+  - amount: ''
+    unit: ''
+    item: 'extra rye flour, for the proving basket'
 steps:
   - The evening before baking, mix the starter, both flours, water and salt in a bowl until no dry spots remain. Cover and rest at room temperature for 30 minutes.
   - Perform four sets of stretch-and-folds at 30-minute intervals, until the dough feels strong and stretchy.

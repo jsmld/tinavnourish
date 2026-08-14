@@ -51,7 +51,9 @@ ingredients:
   - amount: '1'
     unit: tbsp
     item: lemon juice
-  - fresh coriander, to serve
+  - amount: ''
+    unit: ''
+    item: 'fresh coriander, to serve'
 steps:
   - Melt the coconut oil in a wide pan over medium heat and sweat the onion for 8 minutes until soft and translucent.
   - Add the garlic, ginger, curry powder, turmeric and chilli flakes and cook for 1–2 minutes until fragrant.

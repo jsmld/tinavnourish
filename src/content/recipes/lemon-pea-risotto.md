@@ -42,7 +42,9 @@ ingredients:
   - amount: '60'
     unit: g
     item: parmesan, finely grated
-  - sea salt and black pepper
+  - amount: ''
+    unit: ''
+    item: 'sea salt and black pepper'
 steps:
   - Keep the stock hot in a small pan on a back burner.
   - Sweat the onion in olive oil over medium heat for 6–8 minutes until translucent, then add the garlic and rice.

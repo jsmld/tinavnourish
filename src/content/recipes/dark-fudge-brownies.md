@@ -35,7 +35,9 @@ ingredients:
   - amount: '1'
     unit: tsp
     item: vanilla bean paste
-  - flaky sea salt, to finish
+  - amount: ''
+    unit: ''
+    item: 'flaky sea salt, to finish'
 steps:
   - Heat the oven to 170°C (340°F) and line a 20cm square tin with baking paper.
   - Melt the chocolate and butter together in a heatproof bowl over simmering water, then set aside to cool for 5 minutes.

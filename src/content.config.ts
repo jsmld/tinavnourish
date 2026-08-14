@@ -14,11 +14,13 @@ const recipes = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
-    heroImage: z.string().url(),
+    // Decap uploads land in public/uploads/ and are served at /uploads/...;
+    // those relative paths aren't valid URLs, so accept any non-empty string here.
+    heroImage: z.string(),
     author: z.object({
       name: z.string(),
       bio: z.string().optional(),
-      avatar: z.string().url().optional(),
+      avatar: z.string().optional(),
     }),
     course: z.enum(COURSES),
     category: z.enum(CATEGORIES),

@@ -45,7 +45,9 @@ ingredients:
   - amount: '100'
     unit: g
     item: feta, crumbled
-  - flat-leaf parsley and coriander, to serve
+  - amount: ''
+    unit: ''
+    item: 'flat-leaf parsley and coriander, to serve'
 steps:
   - Heat the olive oil in a wide cast-iron pan over medium heat and sweat the onion for 6 minutes.
   - Add the capsicums and cook for 8–10 minutes until very soft and beginning to caramelise at the edges.

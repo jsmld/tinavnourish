@@ -39,7 +39,9 @@ ingredients:
   - amount: '1'
     unit: tbsp
     item: neutral oil
-  - cooked short-grain rice and sliced spring onion, to serve
+  - amount: ''
+    unit: ''
+    item: 'cooked short-grain rice and sliced spring onion, to serve'
 steps:
   - Heat the oven to 200°C (400°F). Whisk the miso, honey, soy, ginger and sesame oil until smooth.
   - Toss the bok choy with the neutral oil and a pinch of salt and spread on a lined baking tray.

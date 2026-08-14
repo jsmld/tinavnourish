@@ -35,7 +35,9 @@ ingredients:
   - amount: '2'
     unit: tbsp
     item: whole milk
-  - zest and juice of 2 lemons
+  - amount: ''
+    unit: ''
+    item: 'zest and juice of 2 lemons'
   - amount: '150'
     unit: g
     item: icing sugar, sifted

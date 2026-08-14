@@ -40,7 +40,9 @@ ingredients:
   - amount: '1'
     unit: tsp
     item: smoked paprika
-  - fresh basil, to serve
+  - amount: ''
+    unit: ''
+    item: 'fresh basil, to serve'
 steps:
   - Heat the oven to 200°C (400°F). Spread the tomatoes cut-side up on a tray with the shallots and garlic.
   - Drizzle with olive oil, season with salt, and roast for 40–45 minutes until the tomatoes are collapsing and lightly charred at the edges.
